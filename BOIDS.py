@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/bin/py
 
 import random
 import pygame
@@ -28,7 +28,6 @@ class Boid:
         self.dx = random.random()
         self.dy = random.random()
         self.dirv = (self.dx, self.dy)
-
     def draw(self):
         pygame.draw.circle(screen, white, self.pos, bdim)
 
@@ -42,8 +41,11 @@ class Boid:
                 ty = -ty
             else:
                 ty = width - (ty - width) 
-            angle = math.atan2(ty-self.y, tx-self.x)
+            angle = math.degrees(math.atan2(ty-self.y, tx-self.x))
+            print(f"Angle ty: {angle}")
             self.dx = math.cos(angle)
+            if(angle == 90):
+                self.dx += 0.1
             self.dy = math.sin(angle)
 
         if (tx < 0 or tx > height):
@@ -51,14 +53,29 @@ class Boid:
                 tx = -tx
             else:
                 tx = height - (tx - height) 
-            angle = math.atan2(tx-self.x, ty-self.y)
+            angle = math.degrees(math.atan2(tx-self.x, ty-self.y))
+            print(f"Angle tx: {angle}")
             self.dx = math.sin(angle)
             self.dy = math.cos(angle)
+            if(angle == 90):
+                self.dy += 0.1
 
     def move(self):
         self.detect_wall_collision()
-        self.x += int(self.dx*bvelocity)
-        self.y += int(self.dy*bvelocity)
+        if(self.dx == 0):
+            self.x += 0
+        else:
+            local_x_velocity = bvelocity/self.dx
+            print(f"x vel:  {local_x_velocity}")
+            print(f"total: {local_x_velocity*self.dx}")
+            self.x += int(self.dx*(self.dx*local_x_velocity))
+        if(self.dy == 0):
+            self.y += 0
+        else:
+             local_y_velocity = bvelocity/self.dy
+             print(f"y vel:  {local_y_velocity}")
+             print(f"total: {local_y_velocity*self.dy}")
+             self.y += int(self.dy*(self.dy*local_y_velocity))
         self.pos = (self.x, self.y)
         
 
